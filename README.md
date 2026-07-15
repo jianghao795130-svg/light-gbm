@@ -75,6 +75,14 @@ pip install pandas numpy scipy matplotlib lightgbm shap optuna tqdm openpyxl
 
 ## 数据与缓存口径
 
+数据来源入口：
+
+```text
+https://www.quantclass.cn/data/stock/category
+```
+
+本项目依赖本地数据中心中的股票行情、指数和财务数据。数据文件不随仓库分发，需要用户自行从数据源获取并放置到本地数据中心目录。
+
 在 `config.py` 中配置本地数据中心：
 
 ```python
