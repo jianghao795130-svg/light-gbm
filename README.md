@@ -60,18 +60,13 @@ training_logs_ascii/
 
 ## 环境依赖
 
-建议使用 Python 3.10+。常用依赖：
+建议使用 Python 3.10+。项目依赖见 [requirements.txt](/E:/机器学习lgbm备份/requirements.txt)。
 
 ```bash
-pip install pandas numpy scipy matplotlib lightgbm shap optuna tqdm openpyxl
+pip install -r requirements.txt
 ```
 
-说明：
-
-- 因子计算和基础数据处理主要依赖 `pandas`、`numpy`、`tqdm`。
-- 完整机器学习流程需要 `lightgbm`、`scipy`、`matplotlib`。
-- Optuna 调参需要 `optuna`。
-- SHAP 重要性分析需要 `shap`。
+其中包含因子计算、回测框架、LightGBM 训练、Optuna 调参、Plotly 图表和 SHAP 解释所需的核心第三方包。
 
 ## 数据与缓存口径
 

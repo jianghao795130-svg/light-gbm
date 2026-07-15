@@ -1,0 +1,16 @@
+colorama
+lightgbm
+matplotlib
+numba
+numpy
+openpyxl
+optuna
+pandas
+plotly
+polars
+pyarrow
+requests
+scikit-learn
+scipy
+shap
+tqdm
