@@ -200,6 +200,83 @@ n+1 日后的开盘价 / 明日开盘价 - 1
 9. 生成样本外 `ml_factor`，评估 RankIC、Pearson IC、TopN 收益、换手率和交易成本。
 10. 输出 Gain / Split / SHAP 综合重要性，并识别低重要性噪声特征。
 
+### 关键代码示例
+
+以下示例对应当前项目中 Notebook 的核心研究链路，便于快速理解“标签构造 -> 特征预处理 -> 滚动训练 -> 样本外评估”的主流程。
+
+**1. 标签与特征预处理**
+
+该步骤对应截面去极值、中性化、标准化以及训练样本表构建。
+
+```python
+from tools.feature_engineering import (
+    build_step1_dataset,
+    prepare_training_dataset,
+)
+
+step1_df, meta = build_step1_dataset(
+    base_df=base_df,
+    data_dir=data_dir,
+    mad_n=5.0,
+)
+
+train_df, train_meta = prepare_training_dataset(
+    df=step1_df,
+    feature_cols=meta["feature_processed_cols"],
+    label_col="未来收益_预处理",
+    raw_return_col="raw_return",
+    original_return_col=meta["label_name"],
+)
+
+features = train_meta["feature_cols"]
+```
+
+**2. 滚动窗口训练与样本外预测**
+
+该步骤使用时间滚动窗完成训练集、验证集、测试集切分，并输出每个测试窗口的样本外预测值。
+
+```python
+from tools.training_pipeline import run_rolling_training
+
+prediction_df, windows, monitor = run_rolling_training(
+    df=train_df,
+    features=features,
+    label_col="未来收益_预处理",
+    train_window_months=72,
+    val_window_months=12,
+    test_window_months=3,
+    stride_months=3,
+    test_start="2021-01-01",
+)
+```
+
+**3. IC 与 TopN 组合评估**
+
+该步骤将模型输出转化为研究指标，分别检查截面预测能力与组合可实现性。
+
+```python
+from tools.evaluation import (
+    evaluate_ic,
+    evaluate_top_n,
+    build_top_n_performance_table,
+)
+
+daily_rank_ic, daily_pearson_ic, ic_summary = evaluate_ic(prediction_df)
+
+daily_returns_df, rebalance_returns = evaluate_top_n(
+    prediction_df,
+    top_n_list=[20, 50, 100],
+    holding_days=20,
+)
+
+perf_df = build_top_n_performance_table(
+    rebalance_returns,
+    holding_days=20,
+)
+```
+
+在实际研究中，建议将上述三步与 `training_monitor.py` 的 RMSE 监控、`importance_analysis.py` 的特征重要性分析以及 TopN / TopM 保留池机制联合使用，而不是仅凭单一收益曲线判断模型优劣。
+
 ## 验证与评估指标
 
 研究评估覆盖三层：
