@@ -1,0 +1,14 @@
+# IDE and notebook cache
+.idea/
+.vscode/
+.ipynb_checkpoints/
+__pycache__/
+
+# Large generated data and runtime outputs
+data/
+artifacts/
+logs/
+research_outputs/
+training_logs/
+training_logs_ascii/
+
